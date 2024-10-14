@@ -1,0 +1,116 @@
+import React, { useState } from 'react';
+
+function StyleCustomizer() {
+  const [elemento, setElemento] = useState('body'); // Selected element (default: body)
+  const [propiedad, setPropiedad] = useState('background-color'); // Selected property (default: background-color)
+  const [valor, setValor] = useState(''); // Input value
+  const [chooseWhatStyling, setChooseWhatStyling] = useState('all'); // Apply style option (default: all)
+
+  const [elementId, setElementId] = useState(''); // Specific element ID (optional)
+  const [specificClass, setSpecificClass] = useState(''); // Specific class (optional)
+
+  const handleElementoChange = (event) => {
+    setElemento(event.target.value);
+  };
+
+  const handlePropiedadChange = (event) => {
+    setPropiedad(event.target.value);
+  };
+
+  const handleValorChange = (event) => {
+    setValor(event.target.value);
+  };
+
+  const handleChooseWhatStylingChange = (event) => {
+    setChooseWhatStyling(event.target.value);
+    // Show/hide relevant options based on selection
+    const specificElementOptions = document.getElementById('specificElementOptions');
+    const specificClassOptions = document.getElementById('specificClassOptions');
+    specificElementOptions.style.display = event.target.value === 'specificElement' ? 'block' : 'none';
+    specificClassOptions.style.display = event.target.value === 'specificClass' ? 'block' : 'none';
+  };
+
+  const handleElementIdChange = (event) => {
+    setElementId(event.target.value);
+  };
+
+  const handleSpecificClassChange = (event) => {
+    setSpecificClass(event.target.value);
+  };
+
+  const handleStyleChange = () => {
+    switch (chooseWhatStyling) {
+      case 'all':
+        document.querySelectorAll('.personalizable').forEach((element) => {
+          element.style[propiedad] = valor;
+        });
+        break;
+      case 'specificElement':
+        if (elementId) {
+          document.getElementById(elementId).style[propiedad] = valor;
+        }
+        break;
+      case 'specificClass':
+        if (specificClass) {
+          document.querySelectorAll(`.${specificClass}`).forEach((element) => {
+            element.style[propiedad] = valor;
+          });
+        }
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleAddElement = () => {
+    let nuevoElemento = prompt('Ingrese el selector del nuevo elemento (ejemplo: .clase, #id):');
+    if (nuevoElemento) {
+      // Check for existing element
+      const opcionesExistentes = document.getElementById('elemento').options;
+      for (let i = 0; i < opcionesExistentes.length; i++) {
+        if (opcionesExistentes[i].value === nuevoElemento) {
+          alert('El elemento ya existe en la lista.');
+          return;
+        }
+      }
+
+      // Create and add new option
+      const option = document.createElement('option');
+      option.text = nuevoElemento;
+      option.value = nuevoElemento;
+      document.getElementById('elemento').appendChild(option);
+      setElemento(nuevoElemento); // Set the new element as selected by default
+    }
+  };
+
+  return (
+    <div>
+      <select value={elemento} onChange={handleElementoChange}>
+        <option value="body">Cuerpo</option>
+        <option value="button">Botón</option>
+        <option value="header">Encabezado</option>
+        <option value="p">Párrafo</option>
+      </select>
+      <select value={propiedad} onChange={handlePropiedadChange}>
+        <option value="background-color">Color de fondo</option>
+        <option value="color">Color de texto</option>
+        <option value="font-size">Tamaño de fuente</option>
+      </select>
+      <select value={chooseWhatStyling} onChange={handleChooseWhatStylingChange}>
+        <option value="all">Todos los elementos con la clase personalizable</option>
+        <option value="specificElement">Un elemento específico</option>
+        <option value="specificClass">Todos los elementos con una clase específica</option>
+      </select>
+      <div id="specificClassOptions" style={{ display: chooseWhatStyling === 'specificClass' ? 'block' : 'none' }}>
+        <label htmlFor="specificClass">Clase específica:</label>
+        <input type="text" id="specificClass" value={specificClass} onChange={handleSpecificClassChange} />
+      </div>
+      <input type="text" id="elementoEspecifico" placeholder="ID del elemento" disabled />
+      <input type="text" id="valor" value={valor} onChange={handleValorChange} />
+      <button onClick={handleStyleChange}>Personalizar</button>
+      <button onClick={handleAddElement}>Agregar elemento</button>
+    </div>
+  );
+}
+
+export default StyleCustomizer;
