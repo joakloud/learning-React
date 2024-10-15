@@ -1,0 +1,14 @@
+function myButton() {
+  return (
+    <button> boton </button>
+  );
+}
+export default function myApp() {
+  return (
+    <div>
+    <h1>this is a app</h1>
+    <myButton/>
+    </div>
+  );
+  
+}
